@@ -1,0 +1,306 @@
+{
+	"info": {
+		"name": "Payment Processing System API",
+		"description": "Collection for testing the multi-currency payment processing system",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "payment-system-api"
+	},
+	"item": [
+		{
+			"name": "Health Check",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{base_url}}/health",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"health"
+					]
+				},
+				"description": "Check if the server is running and healthy"
+			},
+			"response": []
+		},
+		{
+			"name": "Payments",
+			"item": [
+				{
+					"name": "Process Internal Payment",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"fromUserId\": \"{{from_user_id}}\",\n  \"toUserId\": \"{{to_user_id}}\",\n  \"amount\": \"100.00\",\n  \"currency\": \"USD\",\n  \"reference\": \"internal-payment-{{$timestamp}}\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/api/v1/payments/internal",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"payments",
+								"internal"
+							]
+						},
+						"description": "Process a payment between two internal users. This is processed immediately without validation staging."
+					},
+					"response": []
+				},
+				{
+					"name": "Create External Payment Request",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"fromUserId\": \"{{from_user_id}}\",\n  \"amount\": \"100.00\",\n  \"currency\": \"USD\",\n  \"targetCurrency\": \"EUR\",\n  \"externalAccountNumber\": \"1234567890\",\n  \"externalIban\": \"GB82WEST12345698765432\",\n  \"externalBankName\": \"Test Bank\",\n  \"externalAccountHolderName\": \"John Doe\",\n  \"externalCountryCode\": \"GB\",\n  \"reference\": \"external-payment-{{$timestamp}}\",\n  \"idempotencyKey\": \"idempotency-key-{{$timestamp}}\",\n  \"saveAccount\": false\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/api/v1/payments/external",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"payments",
+								"external"
+							]
+						},
+						"description": "Create an external payment request. This will go through validation before being processed. The request will be validated and then can be processed using the Process Payment Request endpoint."
+					},
+					"response": []
+				},
+				{
+					"name": "Create External Payment Request (Using Saved Account)",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"fromUserId\": \"{{from_user_id}}\",\n  \"externalAccountId\": \"{{external_account_id}}\",\n  \"amount\": \"50.00\",\n  \"currency\": \"USD\",\n  \"targetCurrency\": \"GBP\",\n  \"reference\": \"external-payment-saved-{{$timestamp}}\",\n  \"idempotencyKey\": \"idempotency-key-saved-{{$timestamp}}\",\n  \"saveAccount\": false\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/api/v1/payments/external",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"payments",
+								"external"
+							]
+						},
+						"description": "Create an external payment request using a previously saved external account. This avoids re-validation if the account is still valid."
+					},
+					"response": []
+				},
+				{
+					"name": "Process Payment Request",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "{{base_url}}/api/v1/payments/requests/{{payment_request_id}}/process",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"payments",
+								"requests",
+								"{{payment_request_id}}",
+								"process"
+							]
+						},
+						"description": "Process a validated external payment request. The request must be in VALIDATED status before it can be processed."
+					},
+					"response": []
+				}
+			],
+			"description": "Endpoints for processing payments"
+		},
+		{
+			"name": "Examples",
+			"item": [
+				{
+					"name": "Internal Payment - USD",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"fromUserId\": \"11111111-1111-1111-1111-111111111111\",\n  \"toUserId\": \"22222222-2222-2222-2222-222222222222\",\n  \"amount\": \"250.50\",\n  \"currency\": \"USD\",\n  \"reference\": \"payment-usd-001\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/api/v1/payments/internal",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"payments",
+								"internal"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "External Payment - USD to EUR",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"fromUserId\": \"11111111-1111-1111-1111-111111111111\",\n  \"amount\": \"500.00\",\n  \"currency\": \"USD\",\n  \"targetCurrency\": \"EUR\",\n  \"externalIban\": \"FR1420041010050500013M02606\",\n  \"externalBankName\": \"French Bank\",\n  \"externalAccountHolderName\": \"Jean Dupont\",\n  \"externalCountryCode\": \"FR\",\n  \"reference\": \"payment-usd-eur-001\",\n  \"saveAccount\": true\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/api/v1/payments/external",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"payments",
+								"external"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "External Payment - USD to GBP",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"fromUserId\": \"11111111-1111-1111-1111-111111111111\",\n  \"amount\": \"1000.00\",\n  \"currency\": \"USD\",\n  \"targetCurrency\": \"GBP\",\n  \"externalAccountNumber\": \"9876543210\",\n  \"externalRoutingNumber\": \"123456789\",\n  \"externalBankName\": \"UK Bank\",\n  \"externalAccountHolderName\": \"Jane Smith\",\n  \"externalCountryCode\": \"GB\",\n  \"reference\": \"payment-usd-gbp-001\",\n  \"saveAccount\": true\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/api/v1/payments/external",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"api",
+								"v1",
+								"payments",
+								"external"
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"description": "Example requests with sample data"
+		}
+	],
+	"variable": [
+		{
+			"key": "base_url",
+			"value": "http://localhost:4078",
+			"type": "string"
+		},
+		{
+			"key": "from_user_id",
+			"value": "11111111-1111-1111-1111-111111111111",
+			"type": "string"
+		},
+		{
+			"key": "to_user_id",
+			"value": "22222222-2222-2222-2222-222222222222",
+			"type": "string"
+		},
+		{
+			"key": "external_account_id",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "payment_request_id",
+			"value": "",
+			"type": "string"
+		}
+	]
+}

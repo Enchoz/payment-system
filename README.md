@@ -69,12 +69,15 @@ createdb payment_system
 4. Run migrations:
 ```bash
 psql -d payment_system -f migrations/001_initial_schema.up.sql
+psql -d payment_system -f migrations/002_test_data.up.sql
 ```
+
+   The second migration (`002_test_data.up.sql`) creates test users and accounts needed for testing the API endpoints.
 
 5. Set environment variables (optional):
 ```bash
 export DATABASE_URL="postgres://postgres:yourpassword@localhost:5432/payment_system?sslmode=disable"
-export PORT=8080
+export PORT=4078
 ```
 
 6. Run the server:
@@ -82,7 +85,31 @@ export PORT=8080
 go run cmd/api/main.go
 ```
 
-The server will start on port 8080 by default.
+The server will start on port 4078 by default.
+
+## Testing
+
+### Test Data
+
+The `002_test_data.up.sql` migration creates test users and accounts for testing:
+
+**Test Users:**
+- **Alice** (`11111111-1111-1111-1111-111111111111`)
+  - USD: $10,000.00
+  - EUR: €5,000.00
+  - GBP: £3,000.00
+- **Bob** (`22222222-2222-2222-2222-222222222222`)
+  - USD: $5,000.00
+  - EUR: €2,500.00
+  - GBP: £1,500.00
+- **Charlie** (`33333333-3333-3333-3333-333333333333`)
+  - USD: $2,000.00
+  - EUR: €1,000.00
+  - GBP: £500.00
+
+### Postman Collection
+
+A Postman collection (`postman_collection.json`) is included with example requests. The collection is pre-configured with test user IDs from the test data migration. Make sure to run the `002_test_data.up.sql` migration before using the Postman collection.
 
 ## API Endpoints
 
