@@ -6,7 +6,6 @@ import (
 	"payment-system/internal/domain/entities"
 	"payment-system/internal/domain/repositories"
 	"payment-system/internal/infrastructure/postgres"
-	"time"
 
 	"github.com/google/uuid"
 	"github.com/shopspring/decimal"
